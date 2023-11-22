@@ -10,3 +10,7 @@ export const serverClient = generateServerClientUsingCookies<Schema>({
 });
 
 export const client = generateClient<Schema>();
+
+export const logCookies = ():void => {
+  console.log(cookies());
+}

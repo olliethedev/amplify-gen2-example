@@ -1,9 +1,5 @@
 'use server'
 import { serverClient } from "./server-client"
-import { Amplify } from 'aws-amplify';
-// import amplifyconfig from '@/amplifyconfiguration.json';
-
-// Amplify.configure(amplifyconfig);
 
 export const fetchBlogs = async () => {
   const { data: blogs, errors } = await serverClient.models.Blog.list()
@@ -13,31 +9,35 @@ export const fetchBlogs = async () => {
   }
 }
 
+export const fetchBlog = async (id: string) => {
+  const { data: blog, errors } = await serverClient.models.Blog.get({ id })
+
+  if (!errors) {
+    return blog
+  }
+}
+
 export async function createBlogFromForm(formData: FormData) {
-  'use server'
-  console.log(Amplify.getConfig())
-  console.log('formData', formData);
-  const { title, tags, content } = Object.fromEntries(formData.entries()) as { title: string, tags: string, content: string};
-  await createBlog(title,  content, tags.split(', '));
+  const { title, tags, content } = Object.fromEntries(formData.entries()) as { title: string, tags: string, content: string };
+  await createBlog(title, content, tags.split(', '));
 }
 
 export const createBlog = async (title: string, content: string, tags: string[]) => {
   const { data: blog, errors } = await serverClient.models.Blog.create({
     title,
     content
-  },{authMode: 'userPool'});
-  console.log({ blog, errors });
+  }, { authMode: 'userPool' });
+
   for (const tag of tags) {
     const { data: tagData, errors: tagErrors } = await serverClient.models.Tag.create({
       name: tag
-    });
-    console.log({ tagData });
+    }, { authMode: 'userPool' });
+
     if (!tagErrors) {
       const { data: blogTag, errors: blogTagErrors } = await serverClient.models.BlogTags.create({
         blogId: blog.id,
         tagId: tagData.id
-      },{authMode: 'userPool'});
-      console.log({ blogTag, blogTagErrors });
+      }, { authMode: 'userPool' });
     }
   }
   if (!errors) {
@@ -45,12 +45,16 @@ export const createBlog = async (title: string, content: string, tags: string[])
   }
 }
 
+export async function createCommentFromForm(formData: FormData, blogId: string) {
+  const { content } = Object.fromEntries(formData.entries()) as { content: string };
+  await createComment(content, blogId);
+}
+
 export const createComment = async (content: string, blogId: string) => {
   const { data: comment, errors } = await serverClient.models.Comment.create({
     content,
     blogCommentsId: blogId
-  });
-  console.log({ comment, errors });
+  }, { authMode: 'userPool' });
   if (!errors) {
     return comment
   }

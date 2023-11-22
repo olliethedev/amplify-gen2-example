@@ -5,7 +5,7 @@ import { withAuthenticator } from "@aws-amplify/ui-react"
 import { Amplify } from 'aws-amplify';
 import amplifyconfig from '@/amplifyconfiguration.json';
 
-Amplify.configure(amplifyconfig);
+Amplify.configure(amplifyconfig, { ssr: true });
 
 
 const NewBlog = () => {
