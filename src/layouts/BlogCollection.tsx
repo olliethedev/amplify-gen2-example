@@ -1,5 +1,4 @@
-
-import React, { use, useEffect } from 'react'
+import React from 'react'
 import { fetchBlogs } from '../utils/api'
 
 const BlogCollection = async () => {

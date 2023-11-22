@@ -1,6 +1,5 @@
-'use client'
-import BlogCollection from "@/src/layouts/BlogCollection";
 import React from "react";
+import BlogCollection from "@/src/layouts/BlogCollection";
 
 export default function Home() {
   return (
